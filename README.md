@@ -21,7 +21,7 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 # TODO List
 
 - [x] 编写第一课
-- [ ] 在第一课插入过往胡老师上课的视频
+- [ ] 在第一课插入过往胡老师上课的视频、鲁宝程序视频插入
 - [ ] 把第一节课录制成视频
 - [ ] 编写第二课（左右摇头）
 - [ ] 扩充提纲
@@ -34,3 +34,15 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 - 开发这门课程的动机说明
 - 什么样的开发项目会选用Python
 - Notebook的使用说明
+
+## 后续的课程
+
+- 包括左右摇头的例子
+- 包括轨迹的例子
+- 包括做一个乐器的例子
+- 调用ChatGLM
+- 算法课的翻转课堂
+- MediaPipe姿态分类
+- 数据分析的例子
+- 类的使用
+- 图片搜索看看能不能做
