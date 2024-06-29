@@ -2,6 +2,9 @@
 
 旨在帮助更多的同学学会使用ChatGPT、Copilot等工具，用Python开发多样化的程序。
 
+<img src="images/previous_kechuang_course.jpg" alt="Previous Kechuang Course" height="400">
+
+
 这是一个在建的课程项目 预计第一学期会有16节课，每节课的课时在40分钟，额外扩充40分钟的练习实践
 
 这门课程的目标受众，是一个刚接触Python编程的中学生，或者一个对编程了解较少的非计算机专业的同学。
@@ -21,8 +24,8 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 # TODO List
 
 - [x] 编写第一课
-- [ ] 在第一课插入过往胡老师上课的视频、鲁宝程序视频插入
-- [ ] 把第一节课录制成视频
+- [x] 在第一课插入过往胡老师上课的视频、鲁宝程序视频插入
+- [x] 把第一节课录制成视频
 - [ ] 编写第二课（左右摇头）
 - [ ] 扩充提纲
 
