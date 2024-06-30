@@ -27,7 +27,7 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 - [x] 在第一课插入过往胡老师上课的视频、鲁宝程序视频插入
 - [x] 把第一节课录制成视频
 - [ ] 编写第二课（左右摇头）
-- [ ] 在第一节课补充import的讲解
+- [x] 在第一节课补充import的讲解
 - [ ] 扩充提纲
 
 # 课程提纲( 在建 )
