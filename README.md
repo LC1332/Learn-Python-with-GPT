@@ -23,11 +23,7 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 
 # TODO List
 
-- [x] 编写第一课
-- [x] 在第一课插入过往胡老师上课的视频、鲁宝程序视频插入
-- [x] 把第一节课录制成视频
-- [ ] 编写第二课（左右摇头）
-- [x] 在第一节课补充import的讲解
+- [ ] 编写第五课
 - [ ] 扩充提纲
 
 # 课程提纲( 在建 )
@@ -39,14 +35,22 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 - 什么样的开发项目会选用Python
 - Notebook的使用说明
 
-## 后续的课程
+## 第二课，分支语句，与人脸检测实践
 
-- 包括左右摇头的例子
-- 包括轨迹的例子
-- 包括做一个乐器的例子
-- 调用ChatGLM
-- 算法课的翻转课堂
-- MediaPipe姿态分类
-- 数据分析的例子
-- 类的使用
-- 图片搜索看看能不能做
+## 第三课，做一个键盘乐器
+
+## 第四课，基础的数据结构讲解和Excel可视化
+
+## 第五课，对函数的描述，编写更复杂的游戏
+
+## 第六课，类
+
+## 第七课，调用大语言模型的API
+
+## 第八课，编写简单的交互界面
+
+## 后续
+
+- 包含一节密码的课程
+- 包含一节物理模拟
+- 包含一节双文件夹图片机器学习的课程
