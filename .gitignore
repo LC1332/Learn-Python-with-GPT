@@ -162,3 +162,4 @@ cython_debug/
 #.idea/
 /piano_sounds
 /lubao_games/Ludo/audios
+data/zhipu_apikey.txt
