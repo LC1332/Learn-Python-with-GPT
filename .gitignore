@@ -163,3 +163,4 @@ cython_debug/
 /piano_sounds
 /lubao_games/Ludo/audios
 data/zhipu_apikey.txt
+data/01_key.txt

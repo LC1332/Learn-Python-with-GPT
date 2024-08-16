@@ -35,6 +35,14 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 - 什么样的开发项目会选用Python
 - Notebook的使用说明
 
+我想对第二课前后进行比较大的修改，
+
+主要是目前的第二节课会引入太多“老师提前编写的函数”
+
+我们计划在第一节课之后，我们来上一节 “循环与物理模拟”
+
+然后再跟进一节 “分支语句与三门问题”
+
 ## 第二课，分支语句，与人脸检测实践
 
 ## 第三课，做一个键盘乐器
