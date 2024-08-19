@@ -61,7 +61,7 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 
 ## 第十三课，计算机视觉基础
 
-## 第十四课，图像特征和以图搜图
+## 第十四课，图像特征和以图搜图 
 
 ## 第十五课，Text Embedding文本特征
 
