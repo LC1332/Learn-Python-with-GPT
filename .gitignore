@@ -164,3 +164,5 @@ cython_debug/
 /lubao_games/Ludo/audios
 data/zhipu_apikey.txt
 data/01_key.txt
+~$ball_heights.xlsx
+ball_heights.xlsx
