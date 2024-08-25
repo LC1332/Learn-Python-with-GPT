@@ -10,7 +10,7 @@
 import cv2
 import time
 
-def capture_frame( duration = 10 ):
+def capture_frame( duration = 5 ):
     # 打开摄像头
     cap = cv2.VideoCapture(0)
 

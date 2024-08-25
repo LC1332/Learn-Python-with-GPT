@@ -57,15 +57,15 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 
 ## 第十二课，sklearn，分类与回归
 
-## 第十二课，物理模拟
+## 第十三课，物理模拟
 
-## 第十三课，计算机视觉基础
+## 第十四课，计算机视觉基础
 
-## 第十四课，图像特征和以图搜图 
+## 第十五课，图像特征和以图搜图 
 
-## 第十五课，Text Embedding文本特征
+## 第十六课，Text Embedding文本特征
 
-## 第十六课，多线程的处理
+## 第十七课，多线程的处理
 
 
 ## 

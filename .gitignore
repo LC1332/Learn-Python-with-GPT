@@ -166,3 +166,5 @@ data/zhipu_apikey.txt
 data/01_key.txt
 ~$ball_heights.xlsx
 ball_heights.xlsx
+*.wav
+/hand_record_data

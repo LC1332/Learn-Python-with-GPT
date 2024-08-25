@@ -1,48 +1,25 @@
-import numpy as np
-from scipy.io.wavfile import write
 import pygame
-import time
+import sys
 
-# 声音频率（Hz）
-frequencies = {
-    'C': 261.63,
-    'D': 293.66,
-    'E': 329.63,
-    'F': 349.23,
-    'G': 392.00
-}
-
-# 生成声音文件
-def generate_sound(frequency, duration=0.5, sample_rate=44100):
-    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
-    wave = 0.5 * np.sin(2 * np.pi * frequency * t)
-    return wave
-
-sound_folder = "piano_sounds/"
-import os
-os.mkdir(sound_folder)
-
-# 保存wav文件
-for note, freq in frequencies.items():
-    sound_wave = generate_sound(freq)
-    fname = sound_folder + note + ".wav"
-    write(fname, 44100, sound_wave.astype(np.float32))
-
-# 初始化pygame
+# 初始化Pygame
 pygame.init()
 
-# 创建窗口
-screen = pygame.display.set_mode((400, 300))
-pygame.display.set_caption("Pygame Sound Example")
-
-# 加载声音文件
+# 加载音符声音文件
+# 确保你有以下文件：do.wav, re.wav, mi.wav, fa.wav, so.wav
+# 这些文件应该放在你的项目目录中
 sounds = {
-    pygame.K_1: pygame.mixer.Sound(sound_folder + "C.wav"),
-    pygame.K_2: pygame.mixer.Sound(sound_folder + "D.wav"),
-    pygame.K_3: pygame.mixer.Sound(sound_folder + "E.wav"),
-    pygame.K_4: pygame.mixer.Sound(sound_folder + "F.wav"),
-    pygame.K_5: pygame.mixer.Sound(sound_folder + "G.wav")
+    pygame.K_1: pygame.mixer.Sound('do.wav'),
+    pygame.K_2: pygame.mixer.Sound('re.wav'),
+    pygame.K_3: pygame.mixer.Sound('mi.wav'),
+    pygame.K_4: pygame.mixer.Sound('fa.wav'),
+    pygame.K_5: pygame.mixer.Sound('so.wav')
 }
+
+# 设置音符持续时间
+duration = 500  # 毫秒
+
+# 创建一个窗口，大小为200x200
+screen = pygame.display.set_mode((200, 200))
 
 # 主循环
 running = True
@@ -51,10 +28,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
+            # 检查按键是否是我们关心的音符键
             if event.key in sounds:
-                sounds[event.key].play()
-                time.sleep(0.5)  # 播放0.5秒
-                sounds[event.key].stop()  # 停止播放
+                # 播放对应的音符
+                sounds[event.key].play(maxtime=duration)
 
-# 退出pygame
+# 退出Pygame
 pygame.quit()
+sys.exit()

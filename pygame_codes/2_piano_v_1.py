@@ -1,56 +1,57 @@
-import numpy as np
-from scipy.io.wavfile import write
-import os
 import pygame
+import math
+import wave
+import struct
 
-# 声音频率（Hz）
-frequencies = {
-    'C4': 261.63,
-    'D4': 293.66,
-    'E4': 329.63,
-    'F4': 349.23,
-    'G4': 392.00,
-    'A4': 440.00,
-    'B4': 493.88,
-    'C5': 523.25,
-    'D5': 587.33,
-    'E5': 659.25
-}
-
-# 生成声音文件函数
-def generate_sound(frequency, duration=1.0, sample_rate=44100):
-    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
-    wave = 0.5 * np.sin(2 * np.pi * frequency * t)
-    return wave
-
-# 创建声音文件目录
-os.makedirs("piano_sounds", exist_ok=True)
-
-# 生成和保存声音文件
-for note, freq in frequencies.items():
-    sound_wave = generate_sound(freq)
-    write(f"piano_sounds/{note}.wav", 44100, sound_wave.astype(np.float32))
-
-# 初始化pygame
+# 初始化Pygame
 pygame.init()
 
-# 创建窗口
-screen = pygame.display.set_mode((400, 300))
-pygame.display.set_caption("Pygame Piano")
-
-# 加载声音文件
-sounds = {
-    pygame.K_1: pygame.mixer.Sound("piano_sounds/C4.wav"),
-    pygame.K_2: pygame.mixer.Sound("piano_sounds/D4.wav"),
-    pygame.K_3: pygame.mixer.Sound("piano_sounds/E4.wav"),
-    pygame.K_4: pygame.mixer.Sound("piano_sounds/F4.wav"),
-    pygame.K_5: pygame.mixer.Sound("piano_sounds/G4.wav"),
-    pygame.K_6: pygame.mixer.Sound("piano_sounds/A4.wav"),
-    pygame.K_7: pygame.mixer.Sound("piano_sounds/B4.wav"),
-    pygame.K_8: pygame.mixer.Sound("piano_sounds/C5.wav"),
-    pygame.K_9: pygame.mixer.Sound("piano_sounds/D5.wav"),
-    pygame.K_0: pygame.mixer.Sound("piano_sounds/E5.wav")
+# 定义音符频率
+note_freqs = {
+    'do': 261.63,  # C4
+    're': 293.66,  # D4
+    'mi': 329.63,  # E4
+    'fa': 349.23,  # F4
+    'so': 392.00   # G4
 }
+
+# 定义采样率
+sampling_rate = 44100
+
+# 生成一个音符的函数
+def generate_note(freq, duration, filename):
+    # 创建WAV文件
+    obj = wave.open(filename, 'w')
+    obj.setnchannels(1)  # 单声道
+    obj.setsampwidth(2)  # 两个字节
+    obj.setframerate(sampling_rate)
+
+    # 生成正弦波
+    for i in range(int(sampling_rate * duration)):
+        value = int(32767.0 * math.sin(2 * math.pi * freq * i / sampling_rate))
+        data = struct.pack('<h', value)
+        obj.writeframesraw(data)
+
+    obj.close()
+
+# 初始化时生成WAV文件
+for note, freq in note_freqs.items():
+    generate_note(freq, 0.5, f'{note}.wav')
+
+# 加载生成的WAV文件
+note_sounds = {
+    pygame.K_1: pygame.mixer.Sound('do.wav'),
+    pygame.K_2: pygame.mixer.Sound('re.wav'),
+    pygame.K_3: pygame.mixer.Sound('mi.wav'),
+    pygame.K_4: pygame.mixer.Sound('fa.wav'),
+    pygame.K_5: pygame.mixer.Sound('so.wav')
+}
+
+# 设置音符持续时间
+duration = 500  # 毫秒
+
+# 创建一个窗口，大小为200x200
+screen = pygame.display.set_mode((200, 200))
 
 # 主循环
 running = True
@@ -59,11 +60,10 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key in sounds:
-                sounds[event.key].play(-1)  # -1参数使声音循环播放
-        elif event.type == pygame.KEYUP:
-            if event.key in sounds:
-                sounds[event.key].stop()  # 停止声音播放
+            # 检查按键是否是我们关心的音符键
+            if event.key in note_sounds:
+                # 播放对应的音符
+                note_sounds[event.key].play(maxtime=duration)
 
-# 退出pygame
+# 退出Pygame
 pygame.quit()
