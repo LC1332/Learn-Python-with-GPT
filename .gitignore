@@ -168,3 +168,4 @@ data/01_key.txt
 ball_heights.xlsx
 *.wav
 /hand_record_data
+/record_images
