@@ -26,9 +26,20 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 - [x] 初步完成所有课程的实验
 - [ ] 调整钢琴到第一课之后录课
 - [ ] 找人录一下anaconda和vscode的安装
-- [ ] 把最后两节课
+- [ ] 把最后两节课的模型替换为mobileNet
 
 # 课程提纲( 在建 )
+
+## 循环课程补充/重写
+
+在prompt中，循环主要是让计算机重复做一些事情
+
+- 循环包括对数列的循环
+- 对集合的循环
+- 对文件夹的循环
+
+- 不停止的循环以及跳出（素数实验）
+
 
 ## 第一课，引言
 
