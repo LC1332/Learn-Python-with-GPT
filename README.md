@@ -23,8 +23,10 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 
 # TODO List
 
-- [ ] 编写第五课
-- [ ] 扩充提纲
+- [x] 初步完成所有课程的实验
+- [ ] 调整钢琴到第一课之后录课
+- [ ] 找人录一下anaconda和vscode的安装
+- [ ] 把最后两节课
 
 # 课程提纲( 在建 )
 
@@ -63,7 +65,7 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 
 ## 第十五课，图像特征和以图搜图 
 
-## 第十六课，Text Embedding文本特征
+## 第十六课，图片分类
 
 ## 第十七课，多线程的处理
 

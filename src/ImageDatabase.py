@@ -51,3 +51,21 @@ class ImageDatabase:
 
         return most_similar_image, max_similarity
     
+    def get_all_features(self):
+        """
+        返回一个包含所有图像特征的NumPy矩阵。
+        每一行代表一个图像的特征。
+        """
+        if not self.feature_dict:
+            return np.array([])
+
+        features = np.array(list(self.feature_dict.values()))
+        return features
+
+if __name__ == "__main__":
+    import os
+    os.environ['HTTP_PROXY'] = 'http://localhost:8234'
+    os.environ['HTTPS_PROXY'] = 'http://localhost:8234'
+    path = "record_images"
+    db = ImageDatabase(path)
+    print(db.get_all_features().shape)
