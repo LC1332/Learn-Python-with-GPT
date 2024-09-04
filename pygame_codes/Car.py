@@ -16,6 +16,9 @@ class Car:
         self.target_x = x
         self.target_y = y
 
+    def draw(self, screen):
+        self.render(screen)
+
     def update(self):
         dx = self.target_x - self.current_x
         dy = self.target_y - self.current_y
