@@ -15,6 +15,18 @@ This is a project for a course project. The course will have 16 lessons, each le
 
 The course will be taught in Chinese, if there is enough interest, I will translate the course into other languages.
 
+# Recent News
+
+最近我们正在对课程的前八节进行调整和录课，对应的视频
+
+- 第一课 [键盘钢琴](https://www.bilibili.com/video/BV1Xks3e3EGW)
+- 第二课 [循环和人工智障](https://www.bilibili.com/video/BV1cGHEePEj4/)
+- 第三课 [点菜程序和条件分支](https://www.bilibili.com/video/BV1imnfeBEYt/)
+- 第四课 [调用大模型及函数定义](https://www.bilibili.com/video/BV1oiH4eUEF2/)
+- 第五课 [面向对象和pygame游戏](https://www.bilibili.com/video/BV1RppweLE1u/)
+
+相应的讲义已经更新在text文件夹。如果代码和notebook中有冲突，暂时以讲义和录课为准。
+
 # Hiring
 
 - 课程测试者
