@@ -36,9 +36,11 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 # TODO List
 
 - [x] 初步完成所有课程的实验
-- [ ] 调整钢琴到第一课之后录课
-- [ ] 找人录一下anaconda和vscode的安装
-- [ ] 把最后两节课的模型替换为mobileNet
+- [ ] 完成第七课的讲义和录制
+- [ ] 重写引言
+- [ ] 上半册全部调整成lesson_X文件夹的形式
+- [ ] 构思下半册的课程
+- [ ] 完成上半册录课之后建一个交流群
 
 # 课程提纲( 在建 )
 
