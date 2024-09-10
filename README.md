@@ -24,6 +24,8 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 - 第三课 [点菜程序和条件分支](https://www.bilibili.com/video/BV1imnfeBEYt/)
 - 第四课 [调用大模型及函数定义](https://www.bilibili.com/video/BV1oiH4eUEF2/)
 - 第五课 [面向对象和pygame游戏](https://www.bilibili.com/video/BV1RppweLE1u/)
+- 第六课 [AI李白和Python列表](https://www.bilibili.com/video/BV1RppweLE1u)
+- 第七课 [背单词软件和Python字典](https://www.bilibili.com/video/BV1UEpxeKEsF)
 
 相应的讲义已经更新在text文件夹。如果代码和notebook中有冲突，暂时以讲义和录课为准。
 
@@ -36,7 +38,7 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 # TODO List
 
 - [x] 初步完成所有课程的实验
-- [ ] 完成第七课的讲义和录制
+- [x] 完成第七课的讲义和录制
 - [ ] 重写引言
 - [ ] 上半册全部调整成lesson_X文件夹的形式
 - [ ] 构思下半册的课程
