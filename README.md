@@ -2,6 +2,21 @@
 
 旨在帮助更多的同学学会使用ChatGPT、Copilot等工具，用Python开发多样化的程序。
 
+# Recent News
+
+完成对课程前半册的课程录制
+
+| 课程 | B站视频 | 课程文件 |
+| --- | --- | --- |
+| 第一课 钢琴键盘 | [视频呀](https://www.bilibili.com/video/BV1Xks3e3EGW) | [课程文件](./lesson1/) |
+| 第二课 循环和人工智障 | [视频呀](https://www.bilibili.com/video/BV1cGHEePEj4/) | [课程文件](./lesson2/) |
+| 第三课 点菜程序和条件分支 | [视频呀](https://www.bilibili.com/video/BV1imnfeBEYt/) | [课程文件](./lesson3/) |
+| 第四课 调用大模型及函数定义 | [视频呀](https://www.bilibili.com/video/BV1oiH4eUEF2/) | [课程文件](./lesson4/) |
+| 第五课 面向对象和pygame游戏 | [视频呀](https://www.bilibili.com/video/BV1RppweLE1u/) | [课程文件](./lesson5/) |
+| 第六课 AI李白和Python列表 | [视频呀](https://www.bilibili.com/video/BV1RppweLE1u) | [课程文件](./lesson6/) |
+| 第七课 背单词软件和Python字典 | [视频呀](https://www.bilibili.com/video/BV1UEpxeKEsF) | [课程文件](./lesson7/) |
+
+
 <img src="images/previous_kechuang_course.jpg" alt="Previous Kechuang Course" height="400">
 
 
@@ -15,21 +30,7 @@ This is a project for a course project. The course will have 16 lessons, each le
 
 The course will be taught in Chinese, if there is enough interest, I will translate the course into other languages.
 
-# Recent News
 
-最近我们正在对课程的前八节进行调整和录课，对应的视频
-
-- 第一课 [键盘钢琴](https://www.bilibili.com/video/BV1Xks3e3EGW)
-- 第二课 [循环和人工智障](https://www.bilibili.com/video/BV1cGHEePEj4/)
-- 第三课 [点菜程序和条件分支](https://www.bilibili.com/video/BV1imnfeBEYt/)
-- 第四课 [调用大模型及函数定义](https://www.bilibili.com/video/BV1oiH4eUEF2/)
-- 第五课 [面向对象和pygame游戏](https://www.bilibili.com/video/BV1RppweLE1u/)
-- 第六课 [AI李白和Python列表](https://www.bilibili.com/video/BV1RppweLE1u)
-- 第七课 [背单词软件和Python字典](https://www.bilibili.com/video/BV1UEpxeKEsF)
-
-相应的讲义已经更新在text文件夹。如果代码和notebook中有冲突，暂时以讲义和录课为准。
-
-[test_link_to_lesson1](./lesson1/)
 
 # Hiring
 
