@@ -29,6 +29,8 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 
 相应的讲义已经更新在text文件夹。如果代码和notebook中有冲突，暂时以讲义和录课为准。
 
+[test_link_to_lesson1](./lesson1/)
+
 # Hiring
 
 - 课程测试者
