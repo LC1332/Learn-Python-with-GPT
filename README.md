@@ -53,6 +53,7 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 
 - 正式讲解OpenCV的循环
 - MediaPipe的使用
+- 以特定区域监控-入侵检测为例子
 - 手势数据采集（石头剪刀布分类）
 
 ## 数据挖掘和可视化
@@ -85,7 +86,8 @@ The course will be taught in Chinese, if there is enough interest, I will transl
 
 ## 图片分类
 
-- 仍然以手势分类为例，用三个文件夹进行分类的训练
+- 以某个图片分类任务为例子
+- 提示同学也可以迁移到石头剪刀布上
 
 
 # 课程提纲( 在建 )
