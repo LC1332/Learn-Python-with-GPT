@@ -34,6 +34,8 @@ def main():
         # 左右镜像翻转
         image = cv2.flip(image, 1)
 
+        original_image = image.copy()
+
         # 处理图像
         image.flags.writeable = False
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -69,7 +71,7 @@ def main():
             timestamp = int(time.time())
             img_name = f"{chr(key)}_{timestamp}.jpg"
             img_path = os.path.join(img_dir, img_name)
-            cv2.imwrite(img_path, image)
+            cv2.imwrite(img_path, original_image)
 
     cap.release()
     cv2.destroyAllWindows()
