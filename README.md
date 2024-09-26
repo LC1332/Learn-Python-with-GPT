@@ -15,6 +15,9 @@
 | 第五课 面向对象和pygame游戏 | [视频呀](https://www.bilibili.com/video/BV1RppweLE1u/) | [课程文件](./lesson5/) |
 | 第六课 AI李白和Python列表 | [视频呀](https://www.bilibili.com/video/BV1RppweLE1u) | [课程文件](./lesson6/) |
 | 第七课 背单词软件和Python字典 | [视频呀](https://www.bilibili.com/video/BV1UEpxeKEsF) | [课程文件](./lesson7/) |
+| 第八课 计算机视觉 | [视频呀](https://www.bilibili.com/video/BV1QibFeJErB) | [课程文件](./lesson8/) |
+| 第九课 数据挖掘和可视化 | [视频呀](https://www.bilibili.com/video/BV1CgsDevE43) | [课程文件](./lesson9/) |
+| 第十课 机器学习 | [视频呀](https://www.bilibili.com/video/BV1JYxgeHEpX) | [课程文件](./lesson10/) |
 
 
 <img src="images/previous_kechuang_course.jpg" alt="Previous Kechuang Course" height="400">
