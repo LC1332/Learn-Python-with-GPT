@@ -1,0 +1,113 @@
+<!-- 
+eular_interactive.py的代码可以顺利实现，
+能否使用纯前端的html方式来实现？ 
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projectile Motion with Air Resistance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .slider-container {
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Projectile Motion with Air Resistance</h1>
+    <div class="slider-container">
+        <label for="vx">Horizontal Velocity (vx):</label>
+        <input type="range" id="vx" min="0" max="100" value="30">
+        <span id="vx-value">30</span>
+    </div>
+    <div class="slider-container">
+        <label for="vy">Vertical Velocity (vy):</label>
+        <input type="range" id="vy" min="0" max="100" value="30">
+        <span id="vy-value">30</span>
+    </div>
+    <div class="slider-container">
+        <label for="b">Air Resistance Coefficient (b):</label>
+        <input type="range" id="b" min="0" max="1" step="0.01" value="0.1">
+        <span id="b-value">0.1</span>
+    </div>
+    <canvas id="trajectoryCanvas" width="800" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('trajectoryCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const vxSlider = document.getElementById('vx');
+        const vySlider = document.getElementById('vy');
+        const bSlider = document.getElementById('b');
+        const vxValue = document.getElementById('vx-value');
+        const vyValue = document.getElementById('vy-value');
+        const bValue = document.getElementById('b-value');
+
+        function simulateTrajectory(vx, vy, b) {
+            const g = 9.81;
+            const dt = 0.01;
+            let x = 0;
+            let y = 10;
+            const xList = [x];
+            const yList = [y];
+
+            for (let t = 0; t < 1000; t++) {
+                const v = Math.sqrt(vx * vx + vy * vy);
+                vx -= b * v * vx * dt;
+                vy -= (g + b * v * vy) * dt;
+                x += vx * dt;
+                y += vy * dt;
+                xList.push(x);
+                yList.push(y);
+                if (y <= 0) break;
+            }
+
+            return { xList, yList };
+        }
+
+        function drawTrajectory(xList, yList) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(xList[0] * 5, canvas.height - yList[0] * 5);
+            for (let i = 1; i < xList.length; i++) {
+                ctx.lineTo(xList[i] * 5, canvas.height - yList[i] * 5);
+            }
+            ctx.stroke();
+        }
+
+        function updatePlot() {
+            const vx = parseFloat(vxSlider.value);
+            const vy = parseFloat(vySlider.value);
+            const b = parseFloat(bSlider.value);
+            const { xList, yList } = simulateTrajectory(vx, vy, b);
+            drawTrajectory(xList, yList);
+        }
+
+        vxSlider.addEventListener('input', () => {
+            vxValue.textContent = vxSlider.value;
+            updatePlot();
+        });
+
+        vySlider.addEventListener('input', () => {
+            vyValue.textContent = vySlider.value;
+            updatePlot();
+        });
+
+        bSlider.addEventListener('input', () => {
+            bValue.textContent = bSlider.value;
+            updatePlot();
+        });
+
+        updatePlot();
+    </script>
+</body>
+</html>
+

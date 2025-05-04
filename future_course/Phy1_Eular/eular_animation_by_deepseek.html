@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抛体运动实验模拟器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .simulation {
+            flex: 2;
+            min-width: 500px;
+        }
+        canvas {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: block;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>抛体运动实验模拟器</h1>
+    <div class="container">
+        <div class="controls">
+            <div class="slider-container">
+                <label for="velocity">初速度 (m/s): <span id="velocity-value">30</span></label>
+                <input type="range" id="velocity" min="0" max="60" step="0.1" value="30">
+            </div>
+            
+            <div class="slider-container">
+                <label for="angle">抛射角度 (度): <span id="angle-value">45</span></label>
+                <input type="range" id="angle" min="0" max="90" step="1" value="45">
+            </div>
+            
+            <div class="slider-container">
+                <label for="drag">空气阻力系数 (N·s²/m²): <span id="drag-value">0.1</span></label>
+                <input type="range" id="drag" min="0" max="2" step="0.01" value="0.1">
+            </div>
+            
+            <div class="slider-container">
+                <label for="mass">物体质量 (kg): <span id="mass-value">1</span></label>
+                <input type="range" id="mass" min="0.1" max="10" step="0.1" value="1">
+            </div>
+            
+            <button id="simulate">开始模拟</button>
+            <button id="reset">重置</button>
+            
+            <div class="info">
+                <h3>实时数据:</h3>
+                <p>最大高度: <span id="max-height">0</span> m</p>
+                <p>水平距离: <span id="distance">0</span> m</p>
+                <p>飞行时间: <span id="flight-time">0</span> s</p>
+                <p>当前位置: (<span id="current-x">0</span>, <span id="current-y">0</span>) m</p>
+                <p>当前速度: <span id="current-speed">0</span> m/s</p>
+            </div>
+        </div>
+        
+        <div class="simulation">
+            <canvas id="trajectory" width="600" height="400"></canvas>
+            <div style="text-align: center; margin-top: 10px;">
+                <span id="time-display">时间: 0.00 s</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const canvas = document.getElementById('trajectory');
+        const ctx = canvas.getContext('2d');
+        const velocitySlider = document.getElementById('velocity');
+        const angleSlider = document.getElementById('angle');
+        const dragSlider = document.getElementById('drag');
+        const massSlider = document.getElementById('mass');
+        const velocityValue = document.getElementById('velocity-value');
+        const angleValue = document.getElementById('angle-value');
+        const dragValue = document.getElementById('drag-value');
+        const massValue = document.getElementById('mass-value');
+        const simulateBtn = document.getElementById('simulate');
+        const resetBtn = document.getElementById('reset');
+        const maxHeightDisplay = document.getElementById('max-height');
+        const distanceDisplay = document.getElementById('distance');
+        const flightTimeDisplay = document.getElementById('flight-time');
+        const currentXDisplay = document.getElementById('current-x');
+        const currentYDisplay = document.getElementById('current-y');
+        const currentSpeedDisplay = document.getElementById('current-speed');
+        const timeDisplay = document.getElementById('time-display');
+
+        // 物理常数
+        const g = 9.8; // 重力加速度 (m/s²)
+        const scale = 5; // 缩放因子 (像素/米)
+        const originX = 50; // 坐标系原点x
+        const originY = canvas.height - 50; // 坐标系原点y
+
+        // 模拟状态
+        let isSimulating = false;
+        let animationId = null;
+        let time = 0;
+        let dt = 0.016; // 时间步长 (约60fps)
+        let maxHeight = 0;
+        let trajectory = [];
+        
+        // 初始参数
+        let velocity = parseFloat(velocitySlider.value);
+        let angle = parseFloat(angleSlider.value);
+        let dragCoefficient = parseFloat(dragSlider.value);
+        let mass = parseFloat(massSlider.value);
+        
+        // 更新显示值
+        function updateDisplayValues() {
+            velocityValue.textContent = velocity.toFixed(1);
+            angleValue.textContent = angle.toFixed(0);
+            dragValue.textContent = dragCoefficient.toFixed(2);
+            massValue.textContent = mass.toFixed(1);
+        }
+        
+        // 绘制坐标系
+        function drawCoordinateSystem() {
+            ctx.strokeStyle = '#888';
+            ctx.lineWidth = 1;
+            
+            // x轴
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(canvas.width - 20, originY);
+            ctx.stroke();
+            
+            // y轴
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(originX, 20);
+            ctx.stroke();
+            
+            // 刻度
+            ctx.fillStyle = '#888';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            
+            // x轴刻度
+            for (let x = 0; x <= (canvas.width - originX - 20) / scale; x += 10) {
+                const px = originX + x * scale;
+                ctx.beginPath();
+                ctx.moveTo(px, originY);
+                ctx.lineTo(px, originY + 5);
+                ctx.stroke();
+                ctx.fillText(x.toString(), px, originY + 18);
+            }
+            
+            // y轴刻度
+            ctx.textAlign = 'right';
+            for (let y = 0; y <= (originY - 20) / scale; y += 10) {
+                const py = originY - y * scale;
+                ctx.beginPath();
+                ctx.moveTo(originX, py);
+                ctx.lineTo(originX - 5, py);
+                ctx.stroke();
+                ctx.fillText(y.toString(), originX - 10, py + 4);
+            }
+            
+            // 标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'center';
+            ctx.fillText('水平距离 (m)', canvas.width / 2, canvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(20, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('高度 (m)', 0, 0);
+            ctx.restore();
+        }
+        
+        // 绘制轨迹
+        function drawTrajectory() {
+            if (trajectory.length < 2) return;
+            
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(originX + trajectory[0].x * scale, originY - trajectory[0].y * scale);
+            
+            for (let i = 1; i < trajectory.length; i++) {
+                ctx.lineTo(originX + trajectory[i].x * scale, originY - trajectory[i].y * scale);
+            }
+            
+            ctx.stroke();
+            
+            // 绘制当前位置
+            if (trajectory.length > 0) {
+                const currentPos = trajectory[trajectory.length - 1];
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(originX + currentPos.x * scale, originY - currentPos.y * scale, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 重置画布
+        function resetCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawCoordinateSystem();
+        }
+        
+        // 欧拉法计算下一步
+        function eulerStep(x, y, vx, vy, dt) {
+            const speed = Math.sqrt(vx * vx + vy * vy);
+            const dragForce = dragCoefficient * speed * speed;
+            
+            // 计算阻力分量 (与速度方向相反)
+            const dragFx = -dragForce * (vx / speed);
+            const dragFy = -dragForce * (vy / speed);
+            
+            // 计算加速度
+            const ax = dragFx / mass;
+            const ay = -g + dragFy / mass;
+            
+            // 更新速度和位置
+            const newVx = vx + ax * dt;
+            const newVy = vy + ay * dt;
+            const newX = x + vx * dt;
+            const newY = y + vy * dt;
+            
+            return {
+                x: newX,
+                y: newY,
+                vx: newVx,
+                vy: newVy
+            };
+        }
+        
+        // 模拟抛体运动
+        function simulateProjectile() {
+            // 初始条件
+            let x = 0;
+            let y = 0;
+            const angleRad = angle * Math.PI / 180;
+            let vx = velocity * Math.cos(angleRad);
+            let vy = velocity * Math.sin(angleRad);
+            
+            time = 0;
+            maxHeight = 0;
+            trajectory = [{x, y}];
+            
+            function step() {
+                if (y < 0 || time > 10) {
+                    isSimulating = false;
+                    updateDisplayData(x, y, vx, vy);
+                    return;
+                }
+                
+                // 计算下一步
+                const next = eulerStep(x, y, vx, vy, dt);
+                x = next.x;
+                y = next.y;
+                vx = next.vx;
+                vy = next.vy;
+                time += dt;
+                
+                // 记录轨迹
+                trajectory.push({x, y});
+                
+                // 更新最大高度
+                if (y > maxHeight) {
+                    maxHeight = y;
+                }
+                
+                // 更新显示
+                updateDisplayData(x, y, vx, vy);
+                
+                // 重绘
+                resetCanvas();
+                drawTrajectory();
+                
+                // 继续动画
+                if (isSimulating) {
+                    animationId = requestAnimationFrame(step);
+                }
+            }
+            
+            isSimulating = true;
+            step();
+        }
+        
+        // 更新显示数据
+        function updateDisplayData(x, y, vx, vy) {
+            const speed = Math.sqrt(vx * vx + vy * vy);
+            
+            maxHeightDisplay.textContent = maxHeight.toFixed(2);
+            distanceDisplay.textContent = x.toFixed(2);
+            flightTimeDisplay.textContent = time.toFixed(2);
+            currentXDisplay.textContent = x.toFixed(2);
+            currentYDisplay.textContent = y.toFixed(2);
+            currentSpeedDisplay.textContent = speed.toFixed(2);
+            timeDisplay.textContent = `时间: ${time.toFixed(2)} s`;
+        }
+        
+        // 初始化
+        function init() {
+            updateDisplayValues();
+            resetCanvas();
+            
+            // 事件监听
+            velocitySlider.addEventListener('input', function() {
+                velocity = parseFloat(this.value);
+                updateDisplayValues();
+            });
+            
+            angleSlider.addEventListener('input', function() {
+                angle = parseFloat(this.value);
+                updateDisplayValues();
+            });
+            
+            dragSlider.addEventListener('input', function() {
+                dragCoefficient = parseFloat(this.value);
+                updateDisplayValues();
+            });
+            
+            massSlider.addEventListener('input', function() {
+                mass = parseFloat(this.value);
+                updateDisplayValues();
+            });
+            
+            simulateBtn.addEventListener('click', function() {
+                if (isSimulating) {
+                    isSimulating = false;
+                    cancelAnimationFrame(animationId);
+                    this.textContent = '开始模拟';
+                } else {
+                    this.textContent = '暂停模拟';
+                    simulateProjectile();
+                }
+            });
+            
+            resetBtn.addEventListener('click', function() {
+                isSimulating = false;
+                cancelAnimationFrame(animationId);
+                simulateBtn.textContent = '开始模拟';
+                resetCanvas();
+                trajectory = [];
+                time = 0;
+                
+                // 重置显示数据
+                maxHeightDisplay.textContent = '0';
+                distanceDisplay.textContent = '0';
+                flightTimeDisplay.textContent = '0';
+                currentXDisplay.textContent = '0';
+                currentYDisplay.textContent = '0';
+                currentSpeedDisplay.textContent = '0';
+                timeDisplay.textContent = '时间: 0.00 s';
+            });
+        }
+        
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>
