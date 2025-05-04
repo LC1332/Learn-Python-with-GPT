@@ -1,8 +1,15 @@
-# 李鲁鲁老师的Copilot-Python学习
+# 跟着AI学Python
+
+李鲁鲁老师的Copilot-Python学习
 
 旨在帮助更多的同学学会使用ChatGPT、Copilot等工具，用Python开发多样化的程序。
 
+
 # Recent News
+
+- 书名会定为《跟着AI学Python》，大约在6月份出。如果认识鲁鲁老师的可以要一本。第一册的定稿范围从钢琴键盘一直到背单词软件。
+- 考虑将第二册之后的计划课程移动到future_course中。
+
 
 完成对课程前半册的课程录制
 
