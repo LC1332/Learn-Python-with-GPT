@@ -15,3 +15,8 @@ def question2response(user_input):
         ],
     )
     return response.choices[0].message.content  # 返回AI的回答内容
+
+if __name__ == "__main__":
+    user_input = "你好，今天天气怎么样？"
+    response = question2response(user_input)
+    print(response)
