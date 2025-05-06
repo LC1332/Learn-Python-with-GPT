@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>黑洞数6174实验模拟器</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .controls { margin-bottom: 20px; }
+        .digit-slider { margin: 10px; width: 200px; }
+        canvas { border: 1px solid #ccc; margin-top: 20px; }
+        .status { margin: 10px 0; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h2>选择四位不同数字：</h2>
+        <div>
+            <input type="range" min="1" max="9" value="6" class="digit-slider" id="d1">
+            <input type="range" min="0" max="9" value="1" class="digit-slider" id="d2">
+            <input type="range" min="0" max="9" value="7" class="digit-slider" id="d3">
+            <input type="range" min="0" max="9" value="4" class="digit-slider" id="d4">
+        </div>
+        <div class="status">
+            当前数值：<span id="currentNumber">6174</span> | 
+            迭代次数：<span id="stepCount">0</span>
+        </div>
+    </div>
+    <canvas id="canvas" width="800" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let currentNumber = 6174;
+let steps = [];
+
+function validateNumber(num) {
+    const digits = String(num).split('');
+    return new Set(digits).size === 4;
+}
+
+function kaprekarIteration(num) {
+    const asc = String(num).split('').sort().join('');
+    const desc = asc.split('').reverse().join('');
+    return desc - asc;
+}
+
+function drawArrow(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    
+    // 绘制箭头头部
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - 10 * Math.cos(angle - Math.PI/6), y2 - 10 * Math.sin(angle - Math.PI/6));
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - 10 * Math.cos(angle + Math.PI/6), y2 - 10 * Math.sin(angle + Math.PI/6));
+    ctx.stroke();
+}
+
+function visualizeSteps() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    let x = 100, y = 100;
+    const stepHeight = 120;
+    
+    steps.forEach((step, index) => {
+        // 绘制数字分解
+        ctx.fillStyle = '#333';
+        ctx.font = '24px Arial';
+        ctx.fillText(step.start, x, y);
+        
+        // 绘制排序过程
+        ctx.fillStyle = '#666';
+        ctx.font = '18px Arial';
+        ctx.fillText(`↑ ${step.desc}`, x + 100, y - 30);
+        ctx.fillText(`↓ ${step.asc}`, x + 100, y + 30);
+        
+        // 绘制减法过程
+        ctx.fillStyle = '#e74c3c';
+        ctx.fillText(`- ${step.asc}`, x + 250, y);
+        ctx.fillText(`= ${step.result}`, x + 350, y);
+        
+        // 绘制连接箭头
+        if(index < steps.length-1) {
+            drawArrow(x + 400, y, x + 450, y + stepHeight/2);
+        }
+        
+        // 绘制迭代路径
+        ctx.beginPath();
+        ctx.arc(x + 400, y, 5, 0, Math.PI*2);
+        ctx.fillStyle = '#2ecc71';
+        ctx.fill();
+        
+        y += stepHeight;
+    });
+    
+    // 绘制最终结果
+    ctx.fillStyle = '#e67e22';
+    ctx.font = '36px Arial';
+    ctx.fillText('最终结果：6174', 300, y);
+}
+
+function update() {
+    const digits = [
+        document.getElementById('d1').value,
+        document.getElementById('d2').value,
+        document.getElementById('d3').value,
+        document.getElementById('d4').value
+    ];
+    
+    currentNumber = parseInt(digits.join(''));
+    if(!validateNumber(currentNumber)) {
+        alert('请输入四位不同数字！');
+        return;
+    }
+    
+    steps = [];
+    let n = currentNumber;
+    let stepCount = 0;
+    
+    while(n !== 6174 && stepCount < 10) {
+        const asc = String(n).padStart(4, '0').split('').sort().join('');
+        const desc = asc.split('').reverse().join('');
+        const result = desc - asc;
+        
+        steps.push({
+            start: n,
+            asc: asc,
+            desc: desc,
+            result: result
+        });
+        
+        n = result;
+        stepCount++;
+    }
+    
+    document.getElementById('currentNumber').textContent = currentNumber;
+    document.getElementById('stepCount').textContent = stepCount;
+    visualizeSteps();
+}
+
+// 初始化事件监听
+document.querySelectorAll('.digit-slider').forEach(slider => {
+    slider.addEventListener('input', update);
+});
+
+// 初始绘制
+update();
+</script>
+</body>
+</html>

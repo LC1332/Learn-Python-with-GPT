@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黑洞数(6174)实验模拟器</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .control-panel {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        input[type="range"] {
+            flex-grow: 1;
+            margin: 0 15px;
+        }
+        #numberDisplay {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+            min-width: 100px;
+            text-align: center;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .canvas-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        canvas {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #mainCanvas {
+            width: 100%;
+            height: 400px;
+        }
+        #stepsCanvas {
+            width: 100%;
+            height: 150px;
+        }
+        .info-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fffaf0;
+            border-radius: 5px;
+            border-left: 5px solid #f39c12;
+        }
+        .step {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>黑洞数(6174)实验模拟器</h1>
+        
+        <div class="control-panel">
+            <h2>选择初始数字</h2>
+            <div class="slider-container">
+                <span>1000</span>
+                <input type="range" id="numberSlider" min="1023" max="9876" step="1" value="1234">
+                <span>9876</span>
+                <div id="numberDisplay">1234</div>
+            </div>
+            <div>
+                <button id="startBtn">开始模拟</button>
+                <button id="resetBtn">重置</button>
+                <button id="demoBtn">演示示例</button>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="mainCanvas"></canvas>
+            <canvas id="stepsCanvas"></canvas>
+        </div>
+        
+        <div class="info-panel">
+            <h2>关于6174黑洞数</h2>
+            <p>6174被称为Kaprekar常数。对于任何四位数(四个数字不全相同)，按照以下步骤操作最终都会得到6174：</p>
+            <ol>
+                <li>将数字的四个数字按从大到小排列，得到最大数</li>
+                <li>将数字的四个数字按从小到大排列，得到最小数</li>
+                <li>用最大数减去最小数，得到新的数字</li>
+                <li>重复上述步骤，直到得到6174</li>
+            </ol>
+            <p>这个过程最多需要7步。</p>
+        </div>
+        
+        <div id="stepsInfo"></div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const numberSlider = document.getElementById('numberSlider');
+        const numberDisplay = document.getElementById('numberDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const demoBtn = document.getElementById('demoBtn');
+        const mainCanvas = document.getElementById('mainCanvas');
+        const stepsCanvas = document.getElementById('stepsCanvas');
+        const stepsInfo = document.getElementById('stepsInfo');
+        
+        // 设置Canvas大小
+        function resizeCanvases() {
+            const containerWidth = document.querySelector('.container').clientWidth;
+            mainCanvas.width = containerWidth - 40;
+            mainCanvas.height = 400;
+            stepsCanvas.width = containerWidth - 40;
+            stepsCanvas.height = 150;
+        }
+        
+        window.addEventListener('load', resizeCanvases);
+        window.addEventListener('resize', resizeCanvases);
+        
+        // 滑块事件
+        numberSlider.addEventListener('input', function() {
+            const value = this.value;
+            numberDisplay.textContent = value;
+            
+            // 确保数字有四个不同的数字
+            if (!hasFourUniqueDigits(value)) {
+                // 找到最接近的有效数字
+                let newValue = findClosestValidNumber(parseInt(value));
+                this.value = newValue;
+                numberDisplay.textContent = newValue;
+            }
+        });
+        
+        // 检查数字是否有四个不同的数字
+        function hasFourUniqueDigits(num) {
+            const digits = num.toString().split('');
+            return new Set(digits).size === 4;
+        }
+        
+        // 找到最接近的有效数字(四个不同数字)
+        function findClosestValidNumber(num) {
+            // 向上搜索
+            let up = num;
+            while (up <= 9876) {
+                if (hasFourUniqueDigits(up)) return up;
+                up++;
+            }
+            
+            // 向下搜索
+            let down = num;
+            while (down >= 1023) {
+                if (hasFourUniqueDigits(down)) return down;
+                down--;
+            }
+            
+            return 1023; // 默认返回最小的有效数字
+        }
+        
+        // Kaprekar过程
+        function kaprekarProcess(num) {
+            let steps = [];
+            let current = num;
+            
+            while (current !== 6174) {
+                let digits = current.toString().padStart(4, '0').split('');
+                
+                // 确保数字有四个不同的数字
+                if (new Set(digits).size < 2) {
+                    throw new Error("数字必须至少有两个不同的数字");
+                }
+                
+                // 升序和降序排列
+                let ascending = [...digits].sort((a, b) => a - b).join('');
+                let descending = [...digits].sort((a, b) => b - a).join('');
+                
+                let next = parseInt(descending) - parseInt(ascending);
+                
+                steps.push({
+                    number: current,
+                    ascending: ascending,
+                    descending: descending,
+                    next: next,
+                    digits: digits
+                });
+                
+                current = next;
+            }
+            
+            return steps;
+        }
+        
+        // 绘制主Canvas(有向图)
+        function drawMainCanvas(steps, initialNumber) {
+            const ctx = mainCanvas.getContext('2d');
+            ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            
+            const nodeRadius = 30;
+            const levelHeight = (mainCanvas.height - 100) / Math.max(7, steps.length);
+            const centerX = mainCanvas.width / 2;
+            
+            // 绘制标题
+            ctx.font = '18px Arial';
+            ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'center';
+            ctx.fillText(`数字 ${initialNumber} 的黑洞数6174迭代过程`, centerX, 30);
+            
+            // 绘制所有节点(包括中间步骤和6174)
+            const allNodes = [...steps.map(step => step.number), 6174];
+            const nodePositions = [];
+            
+            for (let i = 0; i < allNodes.length; i++) {
+                const y = 60 + i * levelHeight;
+                const x = centerX;
+                
+                nodePositions.push({x, y, number: allNodes[i]});
+                
+                // 绘制连接线(从上一个节点到当前节点)
+                if (i > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(nodePositions[i-1].x, nodePositions[i-1].y + nodeRadius);
+                    ctx.lineTo(x, y - nodeRadius);
+                    ctx.strokeStyle = '#3498db';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // 绘制箭头
+                    drawArrow(ctx, x, y - nodeRadius, 8, Math.PI);
+                }
+                
+                // 绘制节点
+                ctx.beginPath();
+                ctx.arc(x, y, nodeRadius, 0, Math.PI * 2);
+                ctx.fillStyle = allNodes[i] === 6174 ? '#e74c3c' : '#3498db';
+                ctx.fill();
+                ctx.strokeStyle = '#2980b9';
+                ctx.stroke();
+                
+                // 绘制数字
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(allNodes[i].toString(), x, y);
+                
+                // 如果不是最后一步，绘制步骤说明
+                if (i < steps.length) {
+                    const step = steps[i];
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = '#7f8c8d';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${step.descending} - ${step.ascending} = ${step.next}`, x, y + nodeRadius + 15);
+                }
+            }
+            
+            // 添加动画效果
+            animatePath(nodePositions);
+        }
+        
+        // 绘制步骤条形图
+        function drawStepsChart(steps) {
+            const ctx = stepsCanvas.getContext('2d');
+            ctx.clearRect(0, 0, stepsCanvas.width, stepsCanvas.height);
+            
+            const barWidth = (stepsCanvas.width - 100) / (steps.length + 1);
+            const maxBarHeight = stepsCanvas.height - 60;
+            const startX = 50;
+            const baseY = stepsCanvas.height - 30;
+            
+            // 绘制标题
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'center';
+            ctx.fillText('迭代步骤可视化', stepsCanvas.width / 2, 20);
+            
+            // 绘制x轴
+            ctx.beginPath();
+            ctx.moveTo(startX, baseY);
+            ctx.lineTo(stepsCanvas.width - 50, baseY);
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.stroke();
+            
+            // 绘制y轴
+            ctx.beginPath();
+            ctx.moveTo(startX, baseY);
+            ctx.lineTo(startX, 40);
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.stroke();
+            
+            // 绘制y轴标签
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#7f8c8d';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('步数', startX - 10, 30);
+            
+            // 绘制x轴标签
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= steps.length; i++) {
+                const x = startX + i * barWidth;
+                ctx.fillText(i.toString(), x, baseY + 20);
+            }
+            
+            // 绘制条形图
+            for (let i = 0; i < steps.length; i++) {
+                const x = startX + i * barWidth + barWidth / 2;
+                const height = (i + 1) / (steps.length + 1) * maxBarHeight;
+                
+                ctx.fillStyle = `hsl(${i * 30}, 70%, 60%)`;
+                ctx.fillRect(x - barWidth / 4, baseY - height, barWidth / 2, height);
+                
+                // 显示数字
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '12px Arial';
+                ctx.fillText(steps[i].number.toString(), x, baseY - height - 10);
+            }
+            
+            // 绘制6174
+            const lastX = startX + steps.length * barWidth + barWidth / 2;
+            ctx.fillStyle = '#e74c3c';
+            const lastHeight = maxBarHeight;
+            ctx.fillRect(lastX - barWidth / 4, baseY - lastHeight, barWidth / 2, lastHeight);
+            ctx.fillStyle = 'white';
+            ctx.fillText('6174', lastX, baseY - lastHeight / 2);
+        }
+        
+        // 绘制箭头
+        function drawArrow(ctx, x, y, length, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-length, -length/2);
+            ctx.lineTo(-length, length/2);
+            ctx.closePath();
+            ctx.fillStyle = '#3498db';
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // 动画效果
+        function animatePath(nodePositions) {
+            const ctx = mainCanvas.getContext('2d');
+            let currentStep = 0;
+            let progress = 0;
+            const animationSpeed = 0.02;
+            
+            function animate() {
+                if (currentStep >= nodePositions.length - 1) return;
+                
+                // 清除部分区域
+                const prevNode = nodePositions[currentStep];
+                const nextNode = nodePositions[currentStep + 1];
+                const minX = Math.min(prevNode.x, nextNode.x) - 40;
+                const maxX = Math.max(prevNode.x, nextNode.x) + 40;
+                const minY = Math.min(prevNode.y, nextNode.y) - 40;
+                const maxY = Math.max(prevNode.y, nextNode.y) + 40;
+                ctx.clearRect(minX, minY, maxX - minX, maxY - minY);
+                
+                // 重绘连接线
+                ctx.beginPath();
+                ctx.moveTo(prevNode.x, prevNode.y + 30);
+                
+                const interY = prevNode.y + (nextNode.y - prevNode.y) * progress;
+                const controlX1 = prevNode.x;
+                const controlY1 = interY;
+                const controlX2 = nextNode.x;
+                const controlY2 = interY;
+                
+                ctx.bezierCurveTo(
+                    controlX1, controlY1,
+                    controlX2, controlY2,
+                    nextNode.x, nextNode.y - 30 * (1 - progress)
+                );
+                
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制移动的点
+                const pointX = prevNode.x + (nextNode.x - prevNode.x) * progress;
+                const pointY = prevNode.y + 30 + (nextNode.y - prevNode.y - 60) * progress;
+                
+                ctx.beginPath();
+                ctx.arc(pointX, pointY, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+                
+                // 更新进度
+                progress += animationSpeed;
+                
+                if (progress >= 1) {
+                    progress = 0;
+                    currentStep++;
+                    
+                    // 完全重绘当前步骤之后的连接线
+                    if (currentStep < nodePositions.length - 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodePositions[currentStep].x, nodePositions[currentStep].y + 30);
+                        ctx.lineTo(nodePositions[currentStep + 1].x, nodePositions[currentStep + 1].y - 30);
+                        ctx.strokeStyle = '#3498db';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        
+                        // 绘制箭头
+                        drawArrow(ctx, nodePositions[currentStep + 1].x, nodePositions[currentStep + 1].y - 30, 8, Math.PI);
+                    }
+                }
+                
+                if (currentStep < nodePositions.length - 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        // 显示步骤详情
+        function displayStepsInfo(steps, initialNumber) {
+            let html = `<h2>迭代步骤详情 (初始数字: ${initialNumber})</h2>`;
+            
+            if (steps.length === 0) {
+                html += `<p>初始数字已经是6174</p>`;
+            } else {
+                steps.forEach((step, index) => {
+                    html += `
+                        <div class="step">
+                            <strong>第 ${index + 1} 步:</strong><br>
+                            数字: ${step.number}<br>
+                            最大数: ${step.descending}<br>
+                            最小数: ${step.ascending}<br>
+                            差值: ${step.descending} - ${step.ascending} = ${step.next}
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    <div class="step" style="background-color: #ffeeee;">
+                        <strong>最终结果:</strong> 经过 ${steps.length} 步迭代后达到黑洞数 6174
+                    </div>
+                `;
+            }
+            
+            stepsInfo.innerHTML = html;
+        }
+        
+        // 开始模拟
+        startBtn.addEventListener('click', function() {
+            const initialNumber = parseInt(numberSlider.value);
+            
+            try {
+                const steps = kaprekarProcess(initialNumber);
+                drawMainCanvas(steps, initialNumber);
+                drawStepsChart(steps);
+                displayStepsInfo(steps, initialNumber);
+            } catch (e) {
+                alert(e.message);
+            }
+        });
+        
+        // 重置
+        resetBtn.addEventListener('click', function() {
+            numberSlider.value = 1234;
+            numberDisplay.textContent = '1234';
+            mainCanvas.getContext('2d').clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            stepsCanvas.getContext('2d').clearRect(0, 0, stepsCanvas.width, stepsCanvas.height);
+            stepsInfo.innerHTML = '';
+        });
+        
+        // 演示示例
+        demoBtn.addEventListener('click', function() {
+            // 随机选择一个有效的四位数
+            const demoNumbers = [2019, 4321, 1002, 8082, 3524];
+            const randomIndex = Math.floor(Math.random() * demoNumbers.length);
+            const demoNumber = demoNumbers[randomIndex];
+            
+            numberSlider.value = demoNumber;
+            numberDisplay.textContent = demoNumber;
+            
+            // 自动开始模拟
+            startBtn.click();
+        });
+        
+        // 初始化
+        resizeCanvases();
+    </script>
+</body>
+</html>

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黑洞数(6174问题)实验模拟器</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .control-panel {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        .number-display {
+            font-size: 24px;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .canvas-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        canvas {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        #mainCanvas {
+            width: 100%;
+            height: 300px;
+        }
+        #stepsCanvas {
+            width: 100%;
+            height: 200px;
+        }
+        #digitsCanvas {
+            width: 48%;
+            height: 250px;
+        }
+        #graphCanvas {
+            width: 48%;
+            height: 250px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .info {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .step-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .step-table th, .step-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .step-table th {
+            background-color: #f2f2f2;
+        }
+        .step-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>黑洞数(6174问题)实验模拟器</h1>
+    
+    <div class="control-panel">
+        <div class="slider-container">
+            <label for="digit1">千位数:</label>
+            <input type="range" id="digit1" min="1" max="9" value="6" step="1">
+            <span id="digit1Value">6</span>
+        </div>
+        <div class="slider-container">
+            <label for="digit2">百位数:</label>
+            <input type="range" id="digit2" min="0" max="9" value="1" step="1">
+            <span id="digit2Value">1</span>
+        </div>
+        <div class="slider-container">
+            <label for="digit3">十位数:</label>
+            <input type="range" id="digit3" min="0" max="9" value="7" step="1">
+            <span id="digit3Value">7</span>
+        </div>
+        <div class="slider-container">
+            <label for="digit4">个位数:</label>
+            <input type="range" id="digit4" min="0" max="9" value="4" step="1">
+            <span id="digit4Value">4</span>
+        </div>
+        
+        <div class="number-display" id="currentNumber">6174</div>
+        
+        <button id="startBtn">开始模拟</button>
+        <button id="resetBtn">重置</button>
+    </div>
+    
+    <div class="canvas-container">
+        <canvas id="mainCanvas"></canvas>
+        <canvas id="stepsCanvas"></canvas>
+        <canvas id="digitsCanvas"></canvas>
+        <canvas id="graphCanvas"></canvas>
+    </div>
+    
+    <div id="stepsContainer"></div>
+    
+    <div class="info">
+        <h3>关于6174黑洞数(卡普雷卡尔常数):</h3>
+        <p>6174被称为卡普雷卡尔常数，这个数有一个奇妙的特性：</p>
+        <ol>
+            <li>任选一个四位数（四个数字不能完全相同），例如1234</li>
+            <li>将数字从大到小排列，得到4321</li>
+            <li>将数字从小到大排列，得到1234</li>
+            <li>用大数减去小数，4321 - 1234 = 3087</li>
+            <li>重复上述过程，最终必定会得到6174</li>
+        </ol>
+        <p>这个神奇的数字就像数学黑洞，任何符合条件的四位数经过有限次运算后都会被"吸"入6174这个黑洞中。</p>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const digit1Slider = document.getElementById('digit1');
+        const digit2Slider = document.getElementById('digit2');
+        const digit3Slider = document.getElementById('digit3');
+        const digit4Slider = document.getElementById('digit4');
+        const digit1Value = document.getElementById('digit1Value');
+        const digit2Value = document.getElementById('digit2Value');
+        const digit3Value = document.getElementById('digit3Value');
+        const digit4Value = document.getElementById('digit4Value');
+        const currentNumberDisplay = document.getElementById('currentNumber');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const stepsContainer = document.getElementById('stepsContainer');
+        
+        // 获取Canvas元素和上下文
+        const mainCanvas = document.getElementById('mainCanvas');
+        const stepsCanvas = document.getElementById('stepsCanvas');
+        const digitsCanvas = document.getElementById('digitsCanvas');
+        const graphCanvas = document.getElementById('graphCanvas');
+        
+        const mainCtx = mainCanvas.getContext('2d');
+        const stepsCtx = stepsCanvas.getContext('2d');
+        const digitsCtx = digitsCanvas.getContext('2d');
+        const graphCtx = graphCanvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvases() {
+            const width = mainCanvas.parentElement.clientWidth;
+            mainCanvas.width = width;
+            mainCanvas.height = 300;
+            
+            stepsCanvas.width = width;
+            stepsCanvas.height = 200;
+            
+            digitsCanvas.width = width * 0.48;
+            digitsCanvas.height = 250;
+            
+            graphCanvas.width = width * 0.48;
+            graphCanvas.height = 250;
+        }
+        
+        window.addEventListener('resize', resizeCanvases);
+        resizeCanvases();
+        
+        // 更新数字显示
+        function updateNumberDisplay() {
+            const num = getCurrentNumber();
+            currentNumberDisplay.textContent = num;
+            
+            // 检查数字是否有效(四个数字不能完全相同)
+            const digits = num.toString().split('');
+            const allSame = digits.every(d => d === digits[0]);
+            
+            if (allSame) {
+                currentNumberDisplay.style.backgroundColor = '#ffdddd';
+                startBtn.disabled = true;
+            } else {
+                currentNumberDisplay.style.backgroundColor = '#e8f4f8';
+                startBtn.disabled = false;
+            }
+        }
+        
+        // 获取当前选择的数字
+        function getCurrentNumber() {
+            const d1 = digit1Slider.value;
+            const d2 = digit2Slider.value;
+            const d3 = digit3Slider.value;
+            const d4 = digit4Slider.value;
+            return parseInt(d1 + d2 + d3 + d4);
+        }
+        
+        // 滑块事件监听
+        digit1Slider.addEventListener('input', function() {
+            digit1Value.textContent = this.value;
+            updateNumberDisplay();
+        });
+        
+        digit2Slider.addEventListener('input', function() {
+            digit2Value.textContent = this.value;
+            updateNumberDisplay();
+        });
+        
+        digit3Slider.addEventListener('input', function() {
+            digit3Value.textContent = this.value;
+            updateNumberDisplay();
+        });
+        
+        digit4Slider.addEventListener('input', function() {
+            digit4Value.textContent = this.value;
+            updateNumberDisplay();
+        });
+        
+        // 重置按钮
+        resetBtn.addEventListener('click', function() {
+            digit1Slider.value = 6;
+            digit2Slider.value = 1;
+            digit3Slider.value = 7;
+            digit4Slider.value = 4;
+            
+            digit1Value.textContent = '6';
+            digit2Value.textContent = '1';
+            digit3Value.textContent = '7';
+            digit4Value.textContent = '4';
+            
+            updateNumberDisplay();
+            clearVisualizations();
+            stepsContainer.innerHTML = '';
+        });
+        
+        // 清空可视化
+        function clearVisualizations() {
+            mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            stepsCtx.clearRect(0, 0, stepsCanvas.width, stepsCanvas.height);
+            digitsCtx.clearRect(0, 0, digitsCanvas.width, digitsCanvas.height);
+            graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+        }
+        
+        // 卡普雷卡尔运算
+        function kaprekarOperation(num) {
+            // 将数字转换为字符串并补零
+            let numStr = num.toString();
+            while (numStr.length < 4) numStr = '0' + numStr;
+            
+            // 将数字拆分为数组
+            const digits = numStr.split('').map(Number);
+            
+            // 按升序和降序排列
+            const ascending = [...digits].sort((a, b) => a - b);
+            const descending = [...digits].sort((a, b) => b - a);
+            
+            // 转换为数字
+            const numAscending = parseInt(ascending.join(''));
+            const numDescending = parseInt(descending.join(''));
+            
+            // 计算差值
+            const difference = numDescending - numAscending;
+            
+            return {
+                ascending: numAscending,
+                descending: numDescending,
+                difference: difference,
+                digits: digits
+            };
+        }
+        
+        // 绘制主可视化
+        function drawMainVisualization(steps) {
+            mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            
+            const centerX = mainCanvas.width / 2;
+            const centerY = mainCanvas.height / 2;
+            const maxRadius = Math.min(centerX, centerY) * 0.8;
+            
+            // 绘制黑洞
+            mainCtx.beginPath();
+            mainCtx.arc(centerX, centerY, maxRadius * 0.2, 0, Math.PI * 2);
+            mainCtx.fillStyle = '#2c3e50';
+            mainCtx.fill();
+            
+            // 绘制文字"6174"
+            mainCtx.fillStyle = 'white';
+            mainCtx.font = 'bold 24px Arial';
+            mainCtx.textAlign = 'center';
+            mainCtx.textBaseline = 'middle';
+            mainCtx.fillText('6174', centerX, centerY);
+            
+            // 绘制螺旋路径
+            mainCtx.beginPath();
+            const spiralSteps = 100;
+            for (let i = 0; i < spiralSteps; i++) {
+                const t = i / spiralSteps;
+                const angle = t * Math.PI * 8;
+                const radius = maxRadius * (1 - t * 0.8);
+                
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                if (i === 0) {
+                    mainCtx.moveTo(x, y);
+                } else {
+                    mainCtx.lineTo(x, y);
+                }
+            }
+            mainCtx.strokeStyle = '#3498db';
+            mainCtx.lineWidth = 2;
+            mainCtx.stroke();
+            
+            // 绘制步骤点
+            const totalSteps = steps.length;
+            steps.forEach((step, index) => {
+                const t = index / totalSteps;
+                const angle = t * Math.PI * 8;
+                const radius = maxRadius * (1 - t * 0.8);
+                
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                // 绘制点
+                mainCtx.beginPath();
+                mainCtx.arc(x, y, 5, 0, Math.PI * 2);
+                mainCtx.fillStyle = '#e74c3c';
+                mainCtx.fill();
+                
+                // 绘制数字
+                if (index % 2 === 0 || index === totalSteps - 1) {
+                    mainCtx.fillStyle = '#2c3e50';
+                    mainCtx.font = '12px Arial';
+                    mainCtx.fillText(step.number, x + 10, y + 5);
+                }
+            });
+            
+            // 绘制起点
+            const firstStep = steps[0];
+            mainCtx.beginPath();
+            mainCtx.arc(centerX + Math.cos(0) * maxRadius * 0.8, 
+                       centerY + Math.sin(0) * maxRadius * 0.8, 
+                       8, 0, Math.PI * 2);
+            mainCtx.fillStyle = '#27ae60';
+            mainCtx.fill();
+            mainCtx.fillStyle = 'white';
+            mainCtx.font = 'bold 12px Arial';
+            mainCtx.fillText(firstStep.number, 
+                            centerX + Math.cos(0) * maxRadius * 0.8, 
+                            centerY + Math.sin(0) * maxRadius * 0.8 + 4);
+        }
+        
+        // 绘制步骤条形图
+        function drawStepsBarChart(steps) {
+            stepsCtx.clearRect(0, 0, stepsCanvas.width, stepsCanvas.height);
+            
+            const barWidth = stepsCanvas.width / (steps.length + 2);
+            const maxHeight = stepsCanvas.height * 0.8;
+            const maxValue = Math.max(...steps.map(s => s.number));
+            
+            // 绘制坐标轴
+            stepsCtx.beginPath();
+            stepsCtx.moveTo(30, stepsCanvas.height - 30);
+            stepsCtx.lineTo(stepsCanvas.width - 10, stepsCanvas.height - 30);
+            stepsCtx.lineTo(stepsCanvas.width - 15, stepsCanvas.height - 35);
+            stepsCtx.moveTo(stepsCanvas.width - 10, stepsCanvas.height - 30);
+            stepsCtx.lineTo(stepsCanvas.width - 15, stepsCanvas.height - 25);
+            
+            stepsCtx.moveTo(30, stepsCanvas.height - 30);
+            stepsCtx.lineTo(30, 20);
+            stepsCtx.lineTo(25, 25);
+            stepsCtx.moveTo(30, 20);
+            stepsCtx.lineTo(35, 25);
+            stepsCtx.strokeStyle = '#333';
+            stepsCtx.lineWidth = 1;
+            stepsCtx.stroke();
+            
+            // 绘制标签
+            stepsCtx.fillStyle = '#333';
+            stepsCtx.font = '12px Arial';
+            stepsCtx.textAlign = 'center';
+            stepsCtx.fillText('步骤', stepsCanvas.width / 2, stepsCanvas.height - 10);
+            stepsCtx.save();
+            stepsCtx.translate(15, stepsCanvas.height / 2);
+            stepsCtx.rotate(-Math.PI / 2);
+            stepsCtx.fillText('数值', 0, 0);
+            stepsCtx.restore();
+            
+            // 绘制条形图
+            steps.forEach((step, index) => {
+                const x = 40 + index * barWidth;
+                const height = (step.number / maxValue) * maxHeight;
+                
+                stepsCtx.fillStyle = index % 2 === 0 ? '#3498db' : '#e74c3c';
+                stepsCtx.fillRect(x, stepsCanvas.height - 30 - height, barWidth * 0.8, height);
+                
+                // 绘制数值标签
+                stepsCtx.fillStyle = '#333';
+                stepsCtx.font = '10px Arial';
+                stepsCtx.textAlign = 'center';
+                stepsCtx.fillText(step.number.toString(), x + barWidth * 0.4, stepsCanvas.height - 35 - height);
+                
+                // 绘制步骤编号
+                stepsCtx.fillText(`#${index + 1}`, x + barWidth * 0.4, stepsCanvas.height - 15);
+            });
+        }
+        
+        // 绘制数字分解图
+        function drawDigitsVisualization(steps) {
+            digitsCtx.clearRect(0, 0, digitsCanvas.width, digitsCanvas.height);
+            
+            const cellSize = 40;
+            const padding = 20;
+            const startX = padding;
+            const startY = padding;
+            
+            // 绘制标题
+            digitsCtx.fillStyle = '#333';
+            digitsCtx.font = 'bold 16px Arial';
+            digitsCtx.textAlign = 'center';
+            digitsCtx.fillText('数字分解可视化', digitsCanvas.width / 2, 15);
+            
+            // 绘制每一步的数字分解
+            steps.forEach((step, stepIndex) => {
+                const y = startY + stepIndex * (cellSize * 1.5) + 20;
+                
+                // 绘制步骤编号
+                digitsCtx.fillStyle = '#333';
+                digitsCtx.font = '12px Arial';
+                digitsCtx.textAlign = 'left';
+                digitsCtx.fillText(`步骤 ${stepIndex + 1}:`, startX, y + cellSize / 2 + 5);
+                
+                // 绘制数字方块
+                const digits = step.number.toString().padStart(4, '0').split('');
+                digits.forEach((digit, digitIndex) => {
+                    const x = startX + 80 + digitIndex * (cellSize + 5);
+                    
+                    // 绘制方块
+                    digitsCtx.fillStyle = getDigitColor(digit);
+                    digitsCtx.fillRect(x, y, cellSize, cellSize);
+                    
+                    // 绘制数字
+                    digitsCtx.fillStyle = 'white';
+                    digitsCtx.font = 'bold 18px Arial';
+                    digitsCtx.textAlign = 'center';
+                    digitsCtx.textBaseline = 'middle';
+                    digitsCtx.fillText(digit, x + cellSize / 2, y + cellSize / 2);
+                });
+                
+                // 如果是最后一步，不绘制箭头
+                if (stepIndex < steps.length - 1) {
+                    // 绘制箭头
+                    const arrowX = startX + 80 + 4 * (cellSize + 5) + 10;
+                    digitsCtx.beginPath();
+                    digitsCtx.moveTo(arrowX, y + cellSize / 2);
+                    digitsCtx.lineTo(arrowX + 20, y + cellSize / 2);
+                    digitsCtx.lineTo(arrowX + 15, y + cellSize / 2 - 5);
+                    digitsCtx.moveTo(arrowX + 20, y + cellSize / 2);
+                    digitsCtx.lineTo(arrowX + 15, y + cellSize / 2 + 5);
+                    digitsCtx.strokeStyle = '#333';
+                    digitsCtx.lineWidth = 1;
+                    digitsCtx.stroke();
+                    
+                    // 绘制操作说明
+                    digitsCtx.fillStyle = '#7f8c8d';
+                    digitsCtx.font = '10px Arial';
+                    digitsCtx.textAlign = 'left';
+                    digitsCtx.fillText(
+                        `${step.descending} - ${step.ascending} = ${step.difference}`,
+                        arrowX + 25, y + cellSize / 2 + 5
+                    );
+                }
+            });
+        }
+        
+        // 获取数字对应的颜色
+        function getDigitColor(digit) {
+            const colors = [
+                '#e74c3c', // 0 - 红色
+                '#3498db', // 1 - 蓝色
+                '#2ecc71', // 2 - 绿色
+                '#f39c12', // 3 - 橙色
+                '#9b59b6', // 4 - 紫色
+                '#1abc9c', // 5 - 蓝绿色
+                '#d35400', // 6 - 南瓜色
+                '#34495e', // 7 - 湿沥青色
+                '#27ae60', // 8 - 绿宝石色
+                '#c0392b'  // 9 - 深红色
+            ];
+            return colors[parseInt(digit)];
+        }
+        
+        // 绘制折线图
+        function drawLineGraph(steps) {
+            graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+            
+            const padding = 40;
+            const graphWidth = graphCanvas.width - padding * 2;
+            const graphHeight = graphCanvas.height - padding * 2;
+            const maxValue = Math.max(...steps.map(s => s.number));
+            const minValue = Math.min(...steps.map(s => s.number));
+            
+            // 绘制标题
+            graphCtx.fillStyle = '#333';
+            graphCtx.font = 'bold 16px Arial';
+            graphCtx.textAlign = 'center';
+            graphCtx.fillText('数值变化趋势', graphCanvas.width / 2, 15);
+            
+            // 绘制坐标轴
+            graphCtx.beginPath();
+            graphCtx.moveTo(padding, padding);
+            graphCtx.lineTo(padding, padding + graphHeight);
+            graphCtx.lineTo(padding + graphWidth, padding + graphHeight);
+            graphCtx.strokeStyle = '#333';
+            graphCtx.lineWidth = 1;
+            graphCtx.stroke();
+            
+            // 绘制Y轴刻度
+            const yTicks = 5;
+            for (let i = 0; i <= yTicks; i++) {
+                const y = padding + graphHeight - (i / yTicks) * graphHeight;
+                const value = minValue + (maxValue - minValue) * (i / yTicks);
+                
+                graphCtx.beginPath();
+                graphCtx.moveTo(padding - 5, y);
+                graphCtx.lineTo(padding, y);
+                graphCtx.stroke();
+                
+                graphCtx.fillStyle = '#333';
+                graphCtx.font = '10px Arial';
+                graphCtx.textAlign = 'right';
+                graphCtx.textBaseline = 'middle';
+                graphCtx.fillText(Math.round(value).toString(), padding - 10, y);
+            }
+            
+            // 绘制X轴刻度
+            steps.forEach((step, index) => {
+                const x = padding + (index / (steps.length - 1)) * graphWidth;
+                
+                graphCtx.beginPath();
+                graphCtx.moveTo(x, padding + graphHeight);
+                graphCtx.lineTo(x, padding + graphHeight + 5);
+                graphCtx.stroke();
+                
+                graphCtx.fillStyle = '#333';
+                graphCtx.font = '10px Arial';
+                graphCtx.textAlign = 'center';
+                graphCtx.fillText((index + 1).toString(), x, padding + graphHeight + 15);
+            });
+            
+            // 绘制折线
+            graphCtx.beginPath();
+            steps.forEach((step, index) => {
+                const x = padding + (index / (steps.length - 1)) * graphWidth;
+                const y = padding + graphHeight - ((step.number - minValue) / (maxValue - minValue)) * graphHeight;
+                
+                if (index === 0) {
+                    graphCtx.moveTo(x, y);
+                } else {
+                    graphCtx.lineTo(x, y);
+                }
+            });
+            graphCtx.strokeStyle = '#e74c3c';
+            graphCtx.lineWidth = 2;
+            graphCtx.stroke();
+            
+            // 绘制数据点
+            steps.forEach((step, index) => {
+                const x = padding + (index / (steps.length - 1)) * graphWidth;
+                const y = padding + graphHeight - ((step.number - minValue) / (maxValue - minValue)) * graphHeight;
+                
+                graphCtx.beginPath();
+                graphCtx.arc(x, y, 5, 0, Math.PI * 2);
+                graphCtx.fillStyle = '#3498db';
+                graphCtx.fill();
+                
+                // 显示数值
+                if (index % 2 === 0 || index === steps.length - 1) {
+                    graphCtx.fillStyle = '#333';
+                    graphCtx.font = '10px Arial';
+                    graphCtx.textAlign = 'center';
+                    graphCtx.fillText(step.number.toString(), x, y - 10);
+                }
+            });
+        }
+        
+        // 创建步骤表格
+        function createStepsTable(steps) {
+            let tableHTML = `
+                <h3>详细步骤:</h3>
+                <table class="step-table">
+                    <thead>
+                        <tr>
+                            <th>步骤</th>
+                            <th>数字</th>
+                            <th>降序排列</th>
+                            <th>升序排列</th>
+                            <th>差值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            steps.forEach((step, index) => {
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${step.number.toString().padStart(4, '0')}</td>
+                        <td>${step.descending.toString().padStart(4, '0')}</td>
+                        <td>${step.ascending.toString().padStart(4, '0')}</td>
+                        <td>${step.difference.toString().padStart(4, '0')}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            stepsContainer.innerHTML = tableHTML;
+        }
+        
+        // 开始模拟
+        startBtn.addEventListener('click', function() {
+            const initialNumber = getCurrentNumber();
+            const steps = [];
+            let currentNumber = initialNumber;
+            let iterationCount = 0;
+            const maxIterations = 10; // 防止无限循环的安全措施
+            
+            // 清空之前的可视化
+            clearVisualizations();
+            stepsContainer.innerHTML = '';
+            
+            // 执行卡普雷卡尔运算直到得到6174或达到最大迭代次数
+            while (currentNumber !== 6174 && iterationCount < maxIterations) {
+                const operation = kaprekarOperation(currentNumber);
+                
+                steps.push({
+                    number: currentNumber,
+                    ascending: operation.ascending,
+                    descending: operation.descending,
+                    difference: operation.difference
+                });
+                
+                currentNumber = operation.difference;
+                iterationCount++;
+            }
+            
+            // 添加最后一步(6174)
+            if (currentNumber === 6174) {
+                const operation = kaprekarOperation(currentNumber);
+                steps.push({
+                    number: currentNumber,
+                    ascending: operation.ascending,
+                    descending: operation.descending,
+                    difference: operation.difference
+                });
+            }
+            
+            // 绘制各种可视化
+            drawMainVisualization(steps);
+            drawStepsBarChart(steps);
+            drawDigitsVisualization(steps);
+            drawLineGraph(steps);
+            createStepsTable(steps);
+        });
+        
+        // 初始化
+        updateNumberDisplay();
+    </script>
+</body>
+</html>
